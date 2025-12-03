@@ -24,6 +24,7 @@ def previsione_trading_agent(prompt):
     """
     
     # JSON schema for the response
+    # Note: direction is optional (only required for "open" and "close", not for "hold")
     trade_schema = {
         "type": "object",
         "properties": {
@@ -38,9 +39,9 @@ def previsione_trading_agent(prompt):
                 "enum": ["BTC", "ETH", "SOL"]
             },
             "direction": {
-                "type": "string",
-                "description": "Trade direction: long or short. Omitted for hold.",
-                "enum": ["long", "short"]
+                "type": ["string", "null"],
+                "description": "Trade direction: long or short. Required for open/close, omit for hold.",
+                "enum": ["long", "short", None]
             },
             "target_portion_of_balance": {
                 "type": "number",
@@ -50,7 +51,7 @@ def previsione_trading_agent(prompt):
             },
             "leverage": {
                 "type": "number",
-                "description": "Leverage 1-10",
+                "description": "Leverage 1-10 (only for open)",
                 "minimum": 1,
                 "maximum": 10
             },
@@ -61,7 +62,7 @@ def previsione_trading_agent(prompt):
                 "maxLength": 300
             }
         },
-        "required": ["operation", "symbol", "direction", "target_portion_of_balance", "leverage", "reason"],
+        "required": ["operation", "symbol", "target_portion_of_balance", "leverage", "reason"],
         "additionalProperties": False
     }
     
@@ -72,7 +73,12 @@ def previsione_trading_agent(prompt):
             messages=[
                 {
                     "role": "system",
-                    "content": "You are a trading agent. Respond ONLY with valid JSON matching the provided schema. No markdown, no extra text."
+                    "content": (
+                        "You are a trading agent. Respond ONLY with valid JSON matching the provided schema. "
+                        "No markdown, no extra text. "
+                        "IMPORTANT: If operation is 'hold', you can omit or set direction to null. "
+                        "For 'open' and 'close', direction MUST be 'long' or 'short'."
+                    )
                 },
                 {
                     "role": "user",
@@ -129,7 +135,11 @@ def previsione_trading_agent(prompt):
                 messages=[
                     {
                         "role": "system",
-                        "content": "You are a trading agent. Respond ONLY with valid JSON. No markdown, no extra text."
+                        "content": (
+                            "You are a trading agent. Respond ONLY with valid JSON. No markdown, no extra text. "
+                            "IMPORTANT: If operation is 'hold', you can omit or set direction to null. "
+                            "For 'open' and 'close', direction MUST be 'long' or 'short'."
+                        )
                     },
                     {
                         "role": "user",
