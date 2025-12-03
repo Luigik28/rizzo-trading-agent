@@ -318,7 +318,7 @@ class HyperLiquidTrader:
     # ----------------------------------------------------------------------
     #                           UTILITY DEBUG
     # ----------------------------------------------------------------------
-    def debug_symbol_limits(self, symbol: str = None):
+    def debug_symbol_limits(self, symbol: str | None = None):
         """Mostra i limiti di trading per un simbolo o tutti"""
         print("\n📊 LIMITI TRADING HYPERLIQUID")
         print("-" * 60)
