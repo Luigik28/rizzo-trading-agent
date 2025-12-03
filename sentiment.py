@@ -79,9 +79,9 @@ def get_latest_fear_and_greed():
     return None
 
 # get sentiment
-def get_sentiment() -> str:
+def get_sentiment() -> tuple[str, dict] | str:
     """
-    Restituisce una stringa formattata con l'ultimo Fear & Greed Index.
+    Restituisce una stringa formattata con l'ultimo Fear & Greed Index e i dati.
     """
     sentiment_data = get_latest_fear_and_greed()
     if sentiment_data:

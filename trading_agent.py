@@ -6,7 +6,13 @@ import json
 load_dotenv()
 # read api key
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
-client = OpenAI(api_key=OPENAI_API_KEY)
+# Optional: set a custom API base (e.g. https://api.perplexity.ai). If not set, uses OpenAI default.
+OPENAI_BASE_URL = os.getenv("OPENAI_API_BASE")
+if OPENAI_BASE_URL:
+    client = OpenAI(api_key=OPENAI_API_KEY, base_url=OPENAI_BASE_URL)
+else:
+    client = OpenAI(api_key=OPENAI_API_KEY)
+
 
 def previsione_trading_agent(prompt):
     response = client.responses.create(
