@@ -1,4 +1,5 @@
 from openai import OpenAI
+import openai as _openai
 from dotenv import load_dotenv
 import os
 import json 
@@ -9,14 +10,27 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 # Optional: set a custom API base (e.g. https://api.perplexity.ai). If not set, uses OpenAI default.
 OPENAI_API_BASE = os.getenv("OPENAI_API_BASE")
 
+# Some versions of the `openai` package expect configuration to be set on the module
+# (e.g. `openai.api_key` / `openai.api_base`). Passing `api_base` to the `OpenAI`
+# constructor may raise TypeError on some package versions, so we set module-level
+# attributes when available and then instantiate the client without `api_base`.
+if OPENAI_API_KEY:
+    try:
+        _openai.api_key = OPENAI_API_KEY
+    except Exception:
+        # fallback: set env var
+        os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
+
 if OPENAI_API_BASE:
-    # The OpenAI client accepts `api_base` to override the base URL.
-    # Note: many third-party providers (including Perplexity) may NOT be fully
-    # compatible with the OpenAI Responses API and model names used here.
-    # You may need to adapt request parameters or switch to the provider's SDK.
-    client = OpenAI(api_key=OPENAI_API_KEY, api_base=OPENAI_API_BASE)
-else:
-    client = OpenAI(api_key=OPENAI_API_KEY)
+    # Try common attribute names across SDK versions
+    if hasattr(_openai, "base_url"):
+        _openai.base_url = OPENAI_API_BASE
+    else:
+        # Final fallback: set environment variable expected by some clients
+        os.environ["OPENAI_API_BASE"] = OPENAI_API_BASE
+
+# Instantiate client (no api_base kwarg to avoid TypeError on some versions)
+client = OpenAI()
 
 def previsione_trading_agent(prompt):
     response = client.responses.create(
