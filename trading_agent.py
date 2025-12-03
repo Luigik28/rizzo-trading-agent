@@ -4,9 +4,19 @@ import os
 import json 
 
 load_dotenv()
-# read api key
-OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
-client = OpenAI(api_key=OPENAI_API_KEY)
+# read api key and optional base URL (for custom OpenAI-compatible endpoints)
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+# Optional: set a custom API base (e.g. https://api.perplexity.ai). If not set, uses OpenAI default.
+OPENAI_API_BASE = os.getenv("OPENAI_API_BASE")
+
+if OPENAI_API_BASE:
+    # The OpenAI client accepts `api_base` to override the base URL.
+    # Note: many third-party providers (including Perplexity) may NOT be fully
+    # compatible with the OpenAI Responses API and model names used here.
+    # You may need to adapt request parameters or switch to the provider's SDK.
+    client = OpenAI(api_key=OPENAI_API_KEY, api_base=OPENAI_API_BASE)
+else:
+    client = OpenAI(api_key=OPENAI_API_KEY)
 
 def previsione_trading_agent(prompt):
     response = client.responses.create(
