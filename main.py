@@ -58,6 +58,8 @@ try:
 
     op_id = db_utils.log_bot_operation(out, system_prompt=system_prompt, indicators=indicators_json, news_text=news_txt, sentiment=sentiment_json, forecasts=forecasts_json)
     print(f"[db_utils] Operazione inserita con id={op_id}")
+    print(f"Operazione conclusa: {out.get("operation")}")
+    print(f"Reason: {out.get("reason")}")
 
 except Exception as e:
     db_utils.log_error(e, context={"prompt": system_prompt, "tickers": tickers,

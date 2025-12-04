@@ -13,3 +13,4 @@ toonify
 psycopg2-binary
 openai>=0.27.0
 plotly>=5.0.0
+logging

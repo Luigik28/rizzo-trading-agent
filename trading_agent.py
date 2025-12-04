@@ -60,6 +60,12 @@ def previsione_trading_agent(prompt):
                 "description": "Brief explanation",
                 "minLength": 1,
                 "maxLength": 300
+            },
+            "reason_ita": {
+                "type": "string",
+                "description": "Brief explanation in italian language",
+                "minLength": 1,
+                "maxLength": 300
             }
         },
         "required": ["operation", "symbol", "target_portion_of_balance", "leverage", "reason"],
@@ -97,7 +103,7 @@ def previsione_trading_agent(prompt):
     if USE_PERPLEXITY:
         # Perplexity uses Chat Completions API (compatible with OpenAI client)
         response = client.chat.completions.create(
-            model="sonar",  # Perplexity model (or "sonar-pro" if available)
+            model="sonar-reasoning-pro",  # Perplexity model (or "sonar-pro" if available)
             messages=[
                 {
                     "role": "system",

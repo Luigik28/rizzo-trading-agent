@@ -9,7 +9,7 @@ load_dotenv()
 # -------------------------------------------------------------------
 #                    CONFIG PANEL
 # -------------------------------------------------------------------
-TESTNET = True   # True = testnet, False = mainnet (occhio!)
+TESTNET = False   # True = testnet, False = mainnet (occhio!)
 VERBOSE = True    # stampa informazioni extra
 
 PRIVATE_KEY = os.getenv("PRIVATE_KEY")
@@ -24,8 +24,7 @@ if not PRIVATE_KEY or not WALLET_ADDRESS:
 bot = HyperLiquidTrader(
     secret_key=PRIVATE_KEY,
     account_address=WALLET_ADDRESS,
-    testnet=TESTNET
-)
+    testnet=TESTNET,)
 
 bot.debug_symbol_limits("BTC")
 
