@@ -87,23 +87,23 @@ print("\n")
 # -------------------------------------------------------------------
 #                    TEST 1 — OPEN ORDER
 # -------------------------------------------------------------------
-signal_open = {
-    "operation": "close",
-    "symbol": "BNB",
-    "direction": "long",
-    "target_portion_of_balance": 0.05,
-    "leverage": 2,
-    "reason": "Test apertura posizione long"
-}
+# signal_open = {
+#     "operation": "close",
+#     "symbol": "BNB",
+#     "direction": "long",
+#     "target_portion_of_balance": 0.05,
+#     "leverage": 2,
+#     "reason": "Test apertura posizione long"
+# }
 
-print("📌 TEST 1 — OPEN ORDER (BTC LONG)")
-try:
-    result_open = bot.execute_signal(signal_open)
-    print("Risultato OPEN:\n", pretty(result_open))
-except Exception as e:
-    print("❌ ERRORE durante apertura:", e)
+# print("📌 TEST 1 — OPEN ORDER (BTC LONG)")
+# try:
+#     result_open = bot.execute_signal(signal_open)
+#     print("Risultato OPEN:\n", pretty(result_open))
+# except Exception as e:
+#     print("❌ ERRORE durante apertura:", e)
 
-print(bot.get_account_status())
+# print(bot.get_account_status())
 # # aspetta un attimo per evitare race
 # time.sleep(5)
 
