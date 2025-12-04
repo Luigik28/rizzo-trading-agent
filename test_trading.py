@@ -47,6 +47,33 @@ print("🔄 Testing HyperLiquidTrader")
 print("---------------------------------------------------\n")
 
 # -------------------------------------------------------------------
+#                    TEST 0 — ACCOUNT BALANCE
+# -------------------------------------------------------------------
+print("📌 TEST 0 — ACCOUNT BALANCE & STATUS")
+try:
+    account_status = bot.get_account_status()
+    balance = account_status.get("balance_usd")
+    open_positions = account_status.get("open_positions", [])
+    
+    print(f"💰 Balance (USD): ${balance}")
+    print(f"📊 Open Positions: {len(open_positions)}")
+    
+    if open_positions:
+        print("\n   Posizioni aperte:")
+        for pos in open_positions:
+            pnl = pos.get("pnl_usd", 0)
+            pnl_color = "🟢" if pnl >= 0 else "🔴"
+            print(f"   {pnl_color} {pos['symbol']} ({pos['side'].upper()}): {pos['size']} @ {pos['entry_price']} | PnL: ${pnl}")
+    else:
+        print("   Nessuna posizione aperta")
+    
+    print("\nDettagli account completi:\n", pretty(account_status))
+except Exception as e:
+    print("❌ ERRORE durante lettura balance:", e)
+
+print("\n")
+
+# -------------------------------------------------------------------
 #                    TEST 1 — OPEN ORDER
 # -------------------------------------------------------------------
 signal_open = {
