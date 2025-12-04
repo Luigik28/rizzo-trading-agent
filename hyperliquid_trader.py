@@ -45,7 +45,6 @@ class HyperLiquidTrader:
         required_fields = [
             "operation",
             "symbol",
-            "direction",
             "target_portion_of_balance",
             "leverage",
             "reason",
@@ -58,9 +57,13 @@ class HyperLiquidTrader:
         if order_json["operation"] not in ("open", "close", "hold"):
             raise ValueError("operation must be 'open', 'close', or 'hold'")
 
-        if order_json["direction"] not in ("long", "short"):
-            raise ValueError("direction must be 'long' or 'short'")
-
+        # direction is required only for 'open' and 'close', not for 'hold'
+        if order_json["operation"] in ("open", "close"):
+            if "direction" not in order_json or order_json["direction"] is None:
+                raise ValueError("direction is required for 'open' and 'close' operations")
+            if order_json["direction"] not in ("long", "short"):
+                raise ValueError("direction must be 'long' or 'short'")
+        
         try:
             float(order_json["target_portion_of_balance"])
         except:

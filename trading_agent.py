@@ -70,15 +70,19 @@ def previsione_trading_agent(prompt):
         """
         Sanitize LLM response to ensure all required fields are present and valid.
         If direction is missing, set it based on operation:
-        - "hold" -> None
-        - "open", "close" -> default to "long"
+        - "hold" -> None (direction not required for hold)
+        - "open", "close" -> default to "long" (required for these operations)
         """
         # Ensure direction exists
         if "direction" not in result:
             if result.get("operation") == "hold":
                 result["direction"] = None
             else:
-                result["direction"] = "long"  # default for open/close
+                # For "open" and "close", direction is required; default to "long" if missing
+                result["direction"] = "long"
+        elif result.get("direction") is None and result.get("operation") != "hold":
+            # If direction is explicitly null but operation is open/close, default to "long"
+            result["direction"] = "long"
         
         # Ensure operation is valid
         if result.get("operation") not in ["open", "close", "hold"]:
