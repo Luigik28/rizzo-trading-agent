@@ -71,6 +71,17 @@ try:
 except Exception as e:
     print("❌ ERRORE durante lettura balance:", e)
 
+# Debug: raw user_state
+print("\n📌 DEBUG — RAW USER STATE (raw API response)")
+try:
+    raw_data = bot.info.user_state(bot.account_address)
+    print("marginSummary:", pretty(raw_data.get("marginSummary", {})))
+    print("crossMarginSummary:", pretty(raw_data.get("crossMarginSummary", {})))
+    print("Account Address:", bot.account_address)
+    print("Testnet:", TESTNET)
+except Exception as e:
+    print("❌ ERRORE durante debug:", e)
+
 print("\n")
 
 # -------------------------------------------------------------------
