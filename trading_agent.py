@@ -40,7 +40,7 @@ def previsione_trading_agent(prompt):
             },
             "direction": {
                 "type": ["string", "null"],
-                "description": "Trade direction: long or short. Required for open/close, omit for hold.",
+                "description": "Trade direction: long or short. Required for open/close, omit/null for hold.",
                 "enum": ["long", "short", None]
             },
             "target_portion_of_balance": {
@@ -66,6 +66,30 @@ def previsione_trading_agent(prompt):
         "additionalProperties": False
     }
     
+    def _sanitize_response(result: dict) -> dict:
+        """
+        Sanitize LLM response to ensure all required fields are present and valid.
+        If direction is missing, set it based on operation:
+        - "hold" -> None
+        - "open", "close" -> default to "long"
+        """
+        # Ensure direction exists
+        if "direction" not in result:
+            if result.get("operation") == "hold":
+                result["direction"] = None
+            else:
+                result["direction"] = "long"  # default for open/close
+        
+        # Ensure operation is valid
+        if result.get("operation") not in ["open", "close", "hold"]:
+            raise ValueError(f"Invalid operation: {result.get('operation')}")
+        
+        # Ensure symbol is valid
+        if result.get("symbol") not in ["BTC", "ETH", "SOL"]:
+            raise ValueError(f"Invalid symbol: {result.get('symbol')}")
+        
+        return result
+    
     if USE_PERPLEXITY:
         # Perplexity uses Chat Completions API (compatible with OpenAI client)
         response = client.chat.completions.create(
@@ -76,7 +100,8 @@ def previsione_trading_agent(prompt):
                     "content": (
                         "You are a trading agent. Respond ONLY with valid JSON matching the provided schema. "
                         "No markdown, no extra text. "
-                        "IMPORTANT: If operation is 'hold', you can omit or set direction to null. "
+                        "IMPORTANT: Always include all fields. "
+                        "If operation is 'hold', set direction to null. "
                         "For 'open' and 'close', direction MUST be 'long' or 'short'."
                     )
                 },
@@ -100,7 +125,8 @@ def previsione_trading_agent(prompt):
             response_text = response_text[3:]
         if response_text.endswith("```"):
             response_text = response_text[:-3]
-        return json.loads(response_text.strip())
+        result = json.loads(response_text.strip())
+        return _sanitize_response(result)
     else:
         # Use OpenAI's Responses API (if available) or fallback to Chat Completions
         try:
@@ -127,7 +153,8 @@ def previsione_trading_agent(prompt):
                     "web_search_call.action.sources"
                 ]
             )
-            return json.loads(response.output_text)
+            result = json.loads(response.output_text)
+            return _sanitize_response(result)
         except (AttributeError, TypeError):
             # Fallback to Chat Completions if Responses API not available
             response = client.chat.completions.create(
@@ -137,7 +164,8 @@ def previsione_trading_agent(prompt):
                         "role": "system",
                         "content": (
                             "You are a trading agent. Respond ONLY with valid JSON. No markdown, no extra text. "
-                            "IMPORTANT: If operation is 'hold', you can omit or set direction to null. "
+                            "IMPORTANT: Always include all fields. "
+                            "If operation is 'hold', set direction to null. "
                             "For 'open' and 'close', direction MUST be 'long' or 'short'."
                         )
                     },
@@ -159,4 +187,5 @@ def previsione_trading_agent(prompt):
                 response_text = response_text[3:]
             if response_text.endswith("```"):
                 response_text = response_text[:-3]
-            return json.loads(response_text.strip())
+            result = json.loads(response_text.strip())
+            return _sanitize_response(result)
